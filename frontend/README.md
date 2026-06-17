@@ -1,70 +1,57 @@
-# Getting Started with Create React App
+# 📌 Career Recommendation System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 📖 Project Description
 
-## Available Scripts
+This project is a simple interactive career recommendation web application.
 
-In the project directory, you can run:
+The system presents the user with 4 yes/no questions designed to evaluate their interests and strengths.
 
-### `npm start`
+Each answer contributes to a weighted scoring system that matches the user to suitable professions.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## ⚙️ How It Works
 
-### `npm test`
+- The user starts the app and receives 4 questions.
+- Each question has a **Yes / No** answer option.
+- A “Yes” answer adds weighted points to different professions.
+- A “No” answer does not affect the score.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+After answering all questions:
 
-### `npm run build`
+- The system calculates total scores per profession.
+- The profession with the highest score is displayed as the recommendation.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🧠 Scoring Logic Example
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Question:** Do you enjoy solving complex problems?
 
-### `npm run eject`
+**Weights:**
+- Software Developer → 7
+- Systems Analyst → 5
+- Graphic Designer → 3
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+If the user answers **Yes**, these points are added to the relevant professions.  
+If the user answers **No**, no points are added.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🎯 Purpose of the Project
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+This project demonstrates:
 
-## Learn More
+- Basic recommendation logic
+- Weighted scoring system
+- Simple user interaction flow
+- Mapping user preferences to career options
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🚀 Future Improvements
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- AI-generated personalized questions
+- Smarter recommendation model instead of fixed weights
+- More answer types beyond Yes/No
+- Explanations for recommended careers
