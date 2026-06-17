@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "text": "אתה אוהב לפתור בעיות לוגיות ולכתוב קוד?",
+    "weights": { "Software Engineer": 4, "Certified Public Accountant": 1, "Graphic Designer": 1, "Architect": 2 }
+  },
+  {
+    "id": 2,
+    "text": "אתה נהנה מעבודה עם מספרים, טבלאות ופיננסים?",
+    "weights": { "Software Engineer": 1, "Certified Public Accountant": 4, "Graphic Designer": 1, "Architect": 2 }
+  },
+  {
+    "id": 3,
+    "text": "צבע, צורה ואסתטיקה משכילים חלק גדול מהאופן שבו אתה חושב?",
+    "weights": { "Software Engineer": 1, "Certified Public Accountant": 1, "Graphic Designer": 4, "Architect": 3 }
+  },
+  {
+    "id": 4,
+    "text": "אתה אוהב לתכנן מרחבים ולחשוב איך דברים נבנים בעולם הפיזי?",
+    "weights": { "Software Engineer": 2, "Certified Public Accountant": 1, "Graphic Designer": 2, "Architect": 4 }
+  }
+]
