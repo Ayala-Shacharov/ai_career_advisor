@@ -74,52 +74,68 @@ const validateProfession = (payload: unknown): ProfessionMatchResponse => {
   return { profession: payload.profession };
 };
 
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Unknown error';
+};
+
 export class AIService {
   async generateQuestions(text: string): Promise<GenerateQuestionsResponse> {
-    const response = await aiClient.post('/chat/completions', {
-      model: MODEL,
-      messages: [
-        {
-          role: 'system',
-          content: buildQuestionPrompt(),
-        },
-        {
-          role: 'user',
-          content: text,
-        },
-      ],
-      temperature: 0.4,
-    });
+    try {
+      const response = await aiClient.post('/chat/completions', {
+        model: MODEL,
+        messages: [
+          {
+            role: 'system',
+            content: buildQuestionPrompt(),
+          },
+          {
+            role: 'user',
+            content: text,
+          },
+        ],
+        temperature: 0.4,
+      });
 
-    const content = response.data?.choices?.[0]?.message?.content;
-    if (typeof content !== 'string') {
-      throw new Error('Invalid AI response.');
+      const content = response.data?.choices?.[0]?.message?.content;
+      if (typeof content !== 'string') {
+        throw new Error('Invalid AI response.');
+      }
+
+      return validateQuestions(parseJsonObject(content));
+    } catch (error) {
+      throw new Error(`Failed to generate questions: ${getErrorMessage(error)}`);
     }
-
-    return validateQuestions(parseJsonObject(content));
   }
 
   async matchProfession(text: string): Promise<ProfessionMatchResponse> {
-    const response = await aiClient.post('/chat/completions', {
-      model: MODEL,
-      messages: [
-        {
-          role: 'system',
-          content: buildProfessionPrompt(),
-        },
-        {
-          role: 'user',
-          content: text,
-        },
-      ],
-      temperature: 0.3,
-    });
+    try {
+      const response = await aiClient.post('/chat/completions', {
+        model: MODEL,
+        messages: [
+          {
+            role: 'system',
+            content: buildProfessionPrompt(),
+          },
+          {
+            role: 'user',
+            content: text,
+          },
+        ],
+        temperature: 0.3,
+      });
 
-    const content = response.data?.choices?.[0]?.message?.content;
-    if (typeof content !== 'string') {
-      throw new Error('Invalid AI response.');
+      const content = response.data?.choices?.[0]?.message?.content;
+      if (typeof content !== 'string') {
+        throw new Error('Invalid AI response.');
+      }
+
+      return validateProfession(parseJsonObject(content));
+    } catch (error) {
+      throw new Error(`Failed to match profession: ${getErrorMessage(error)}`);
     }
-
-    return validateProfession(parseJsonObject(content));
   }
 }
