@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
   generateQuestions,
   matchProfession,
-} from '../controllers/ai.controller';
+} from '../controllers/ai.controller.js';
 
 const router = Router();
 

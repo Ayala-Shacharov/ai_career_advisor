@@ -1,12 +1,12 @@
-import { aiClient } from '../config/aiClient';
+import { aiClient } from '../config/aiClient.js';
 import {
   buildQuestionPrompt,
   buildProfessionPrompt,
-} from '../utils/prompt.util';
+} from '../utils/prompt.util.js';
 import type {
   GenerateQuestionsResponse,
   ProfessionMatchResponse,
-} from '../types/ai.types';
+} from '../types/ai.types.js';
 
 const MODEL = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
 
@@ -107,6 +107,7 @@ export class AIService {
 
       return validateQuestions(parseJsonObject(content));
     } catch (error) {
+      console.error('generateQuestions error:', error);
       throw new Error(`Failed to generate questions: ${getErrorMessage(error)}`);
     }
   }
@@ -135,6 +136,7 @@ export class AIService {
 
       return validateProfession(parseJsonObject(content));
     } catch (error) {
+      console.error('matchProfession error:', error);
       throw new Error(`Failed to match profession: ${getErrorMessage(error)}`);
     }
   }

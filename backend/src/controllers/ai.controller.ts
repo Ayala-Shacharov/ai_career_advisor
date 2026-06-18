@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
-import { AIService } from '../services/ai.service';
+import { AIService } from '../services/ai.service.js';
 import type {
   GenerateQuestionsRequest,
   ProfessionMatchRequest,
-} from '../types/ai.types';
+} from '../types/ai.types.js';
 
 const aiService = new AIService();
 
