@@ -11,8 +11,14 @@ export interface GenerateQuestionsResponse {
   questions: QuestionOption[];
 }
 
+export interface AnswerItem {
+  question: string;
+  answer: string;
+}
+
 export interface ProfessionMatchRequest {
   text: string;
+  answers: AnswerItem[];
 }
 
 export interface ProfessionMatchResponse {

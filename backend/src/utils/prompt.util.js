@@ -1,4 +1,4 @@
-export const buildQuestionPrompt = (): string => `
+export const buildQuestionPrompt = () => `
 אתה יוצר 4 שאלות אבחון מקצועי לעבודה עם טקסט חופשי של משתמש.
 המטרה היא לזהות מידע חסר שצריך כדי לבנות פרופיל מקצועי שלם, ולא לסכם את הטקסט.
 החזר רק JSON תקין בדיוק לפי הסכמה הבאה:
@@ -22,8 +22,7 @@ export const buildQuestionPrompt = (): string => `
 - כל הטקסט חייב להיות בעברית בלבד.
 - אל תוסיף שום טקסט נוסף מחוץ ל-JSON.
 `;
-
-export const buildProfessionPrompt = (): string => `
+export const buildProfessionPrompt = () => `
 אתה משווה פרופיל של משתמש למקצוע המתאים ביותר.
 החזר רק JSON תקין בדיוק לפי הסכמה הבאה:
 {
@@ -36,3 +35,4 @@ export const buildProfessionPrompt = (): string => `
 - הערך של "profession" חייב להיות בעברית בלבד.
 - אל תוסיף שום טקסט נוסף מחוץ ל-JSON.
 `;
+//# sourceMappingURL=prompt.util.js.map
