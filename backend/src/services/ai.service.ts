@@ -1,14 +1,21 @@
-import { aiClient } from '../config/aiClient';
+import { GoogleGenAI } from '@google/genai';
 import {
   buildQuestionPrompt,
   buildProfessionPrompt,
-} from '../utils/prompt.util';
+} from '../utils/prompt.util.js';
 import type {
+  AnswerItem,
   GenerateQuestionsResponse,
   ProfessionMatchResponse,
-} from '../types/ai.types';
+} from '../types/ai.types.js';
 
-const MODEL = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
+const MODEL = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
+
+const getApiKey = (): string => {
+  const key = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_API_KEY;
+  if (!key) throw new Error('Gemini API key is not configured');
+  return key;
+};
 
 const parseJsonObject = (rawContent: string): unknown => {
   const normalized = rawContent
@@ -52,10 +59,7 @@ const validateQuestions = (payload: unknown): GenerateQuestionsResponse => {
       throw new Error('Invalid question structure.');
     }
 
-    return {
-      question: item.question,
-      options: item.options,
-    };
+    return { question: item.question, options: item.options };
   });
 
   return { questions };
@@ -74,65 +78,58 @@ const validateProfession = (payload: unknown): ProfessionMatchResponse => {
   return { profession: payload.profession };
 };
 
-const getErrorMessage = (error: unknown): string => {
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  return 'Unknown error';
-};
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : 'Unknown error';
 
 export class AIService {
+  private async callModel(
+    systemPrompt: string,
+    userText: string,
+    temperature: number,
+  ): Promise<string> {
+    const ai = new GoogleGenAI({ apiKey: getApiKey() });
+
+    const response = await ai.models.generateContent({
+      model: MODEL,
+      contents: `System:\n${systemPrompt}\n\nUser:\n${userText}`,
+      config: { temperature },
+    });
+
+    const content = response.text;
+    if (typeof content !== 'string' || content.length === 0) {
+      throw new Error('Invalid AI response.');
+    }
+
+    return content;
+  }
+
   async generateQuestions(text: string): Promise<GenerateQuestionsResponse> {
     try {
-      const response = await aiClient.post('/chat/completions', {
-        model: MODEL,
-        messages: [
-          {
-            role: 'system',
-            content: buildQuestionPrompt(),
-          },
-          {
-            role: 'user',
-            content: text,
-          },
-        ],
-        temperature: 0.4,
-      });
-
-      const content = response.data?.choices?.[0]?.message?.content;
-      if (typeof content !== 'string') {
-        throw new Error('Invalid AI response.');
-      }
-
+      const content = await this.callModel(buildQuestionPrompt(), text, 0.4);
       return validateQuestions(parseJsonObject(content));
     } catch (error) {
       throw new Error(`Failed to generate questions: ${getErrorMessage(error)}`);
     }
   }
 
-  async matchProfession(text: string): Promise<ProfessionMatchResponse> {
+  async matchProfession(
+    text: string,
+    answers: AnswerItem[],
+  ): Promise<ProfessionMatchResponse> {
     try {
-      const response = await aiClient.post('/chat/completions', {
-        model: MODEL,
-        messages: [
-          {
-            role: 'system',
-            content: buildProfessionPrompt(),
-          },
-          {
-            role: 'user',
-            content: text,
-          },
-        ],
-        temperature: 0.3,
-      });
-
-      const content = response.data?.choices?.[0]?.message?.content;
-      if (typeof content !== 'string') {
-        throw new Error('Invalid AI response.');
-      }
-
+      const payload = JSON.stringify(
+        {
+          text,
+          answers,
+        },
+        null,
+        2,
+      );
+      const content = await this.callModel(
+        buildProfessionPrompt(),
+        payload,
+        0.3,
+      );
       return validateProfession(parseJsonObject(content));
     } catch (error) {
       throw new Error(`Failed to match profession: ${getErrorMessage(error)}`);
