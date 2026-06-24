@@ -1,6 +1,3 @@
-import { mkdir, writeFile } from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import type { Request, Response } from 'express';
 import { AIService } from '../services/ai.service.js';
 import type {
@@ -10,9 +7,6 @@ import type {
 } from '../types/ai.types.js';
 
 const aiService = new AIService();
-const DB_FILE = fileURLToPath(
-  new URL('../../data/user-inputs.json', import.meta.url),
-);
 
 const isValidText = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0;
@@ -35,16 +29,6 @@ const isValidAnswers = (value: unknown): value is AnswerItem[] => {
   );
 };
 
-const saveTextToDb = async (text: string): Promise<void> => {
-  const dir = path.dirname(DB_FILE);
-  await mkdir(dir, { recursive: true });
-  const payload = {
-    text,
-    createdAt: new Date().toISOString(),
-  };
-
-  await writeFile(DB_FILE, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
-};
 
 export const generateQuestions = async (
   req: Request<{}, {}, GenerateQuestionsRequest>,
@@ -60,7 +44,6 @@ export const generateQuestions = async (
   }
 
   try {
-    await saveTextToDb(text);
     const result = await aiService.generateQuestions(text);
     console.log('generateQuestions success response:', result);
     return res.status(200).json(result);
