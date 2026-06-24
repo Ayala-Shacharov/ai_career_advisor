@@ -1,0 +1,12 @@
+{
+  "name": "ai-career-advisor",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npx tsx watch --env-file=.env src/server.ts",
+    "dev:frontend": "cd frontend && npm start"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
