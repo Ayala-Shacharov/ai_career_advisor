@@ -108,6 +108,7 @@ export class AIService {
       const content = await this.callModel(buildQuestionPrompt(), text, 0.4);
       return validateQuestions(parseJsonObject(content));
     } catch (error) {
+      console.error('generateQuestions error:', error);
       throw new Error(`Failed to generate questions: ${getErrorMessage(error)}`);
     }
   }
@@ -132,6 +133,7 @@ export class AIService {
       );
       return validateProfession(parseJsonObject(content));
     } catch (error) {
+      console.error('matchProfession error:', error);
       throw new Error(`Failed to match profession: ${getErrorMessage(error)}`);
     }
   }

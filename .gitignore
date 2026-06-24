@@ -142,8 +142,18 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
+# backend runtime data
+backend/data/user-inputs.json
+
 # TypeScript compiled output
 backend/src/**/*.js
 backend/src/**/*.js.map
 backend/src/**/*.d.ts
 backend/src/**/*.d.ts.map
+
+# If you use build folders
+dist/
+build/
+
+# Optional cache junk
+*.tsbuildinfo
