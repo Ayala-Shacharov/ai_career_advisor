@@ -7,7 +7,7 @@ import "./index.css";
 
 function App() {
   const [step, setStep] = useState("input");
-  const [userText, setUserText] = useState("");
+  const [sessionId, setSessionId] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [result, setResult] = useState(null);
@@ -18,8 +18,8 @@ function App() {
     setLoading(true);
     setError(null);
     try {
-      const qs = await fetchQuestions(text);
-      setUserText(text);
+      const { sessionId: sid, questions: qs } = await fetchQuestions(text);
+      setSessionId(sid);
       setQuestions(qs);
       setStep("questions");
     } catch (e) {
@@ -30,17 +30,15 @@ function App() {
   };
 
   const handleAnswer = async (answer) => {
-  const currentIndex = answers.length;
-  const currentQuestion = questions[currentIndex];
-  const newAnswers = [...answers, { question: currentQuestion.question, answer }];
+    const newAnswers = [...answers, answer];
 
   if (newAnswers.length === questions.length) {
     setStep("loading");
     setError(null);
     try {
-      const profession = await fetchRecommendation(userText, newAnswers);
+      const recommendation = await fetchRecommendation(sessionId, newAnswers);
       setAnswers(newAnswers);
-      setResult(profession);
+      setResult(recommendation);
       setStep("result");
     } catch (e) {
       setAnswers(newAnswers.slice(0, -1));
@@ -56,7 +54,7 @@ function App() {
 
   const handleRestart = () => {
     setStep("input");
-    setUserText("");
+    setSessionId(null);
     setQuestions([]);
     setAnswers([]);
     setResult(null);

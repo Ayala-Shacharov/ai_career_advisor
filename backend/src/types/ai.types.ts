@@ -24,3 +24,20 @@ export interface ProfessionMatchRequest {
 export interface ProfessionMatchResponse {
   profession: string;
 }
+
+export interface QAItem {
+  question: string;
+  options: [string, string, string, string];
+}
+
+export interface SessionRecord {
+  sessionId: string;
+  freeText: string;
+  qa: QAItem[];
+  recommendation: string | null;
+}
+
+export interface GetRecommendationRequest {
+  sessionId: string;
+  answers: string[];
+}

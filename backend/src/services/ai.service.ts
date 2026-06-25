@@ -4,9 +4,9 @@ import {
   buildProfessionPrompt,
 } from '../utils/prompt.util.js';
 import type {
-  AnswerItem,
   GenerateQuestionsResponse,
   ProfessionMatchResponse,
+  QAItem,
 } from '../types/ai.types.js';
 
 const MODEL = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
@@ -115,22 +115,12 @@ export class AIService {
 
   async matchProfession(
     text: string,
-    answers: AnswerItem[],
+    qa: QAItem[],
+    answers: string[],
   ): Promise<ProfessionMatchResponse> {
     try {
-      const payload = JSON.stringify(
-        {
-          text,
-          answers,
-        },
-        null,
-        2,
-      );
-      const content = await this.callModel(
-        buildProfessionPrompt(),
-        payload,
-        0.3,
-      );
+      const payload = JSON.stringify({ text, qa, answers }, null, 2);
+      const content = await this.callModel(buildProfessionPrompt(), payload, 0.3);
       return validateProfession(parseJsonObject(content));
     } catch (error) {
       console.error('matchProfession error:', error);

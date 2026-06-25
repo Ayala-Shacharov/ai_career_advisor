@@ -1,6 +1,6 @@
 const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
-const OVERLOAD_MSG = "המערכת עמוסה כרגע, נסי שוב בעוד רגע";
+const OVERLOAD_MSG = "המערכת עמוסה כרגע, נסי שוב בעוד כמה שניות. אם הבעיה נמשכת, אנא פנה/י לתמיכה.";
 
 const handleResponse = async (res) => {
   if (!res.ok) {
@@ -20,15 +20,15 @@ export const fetchQuestions = async (text) => {
     body: JSON.stringify({ text }),
   });
   const data = await handleResponse(res);
-  return data.questions;
+  return { sessionId: data.sessionId, questions: data.qa };
 };
 
-export const fetchRecommendation = async (text, answers) => {
+export const fetchRecommendation = async (sessionId, answers) => {
   const res = await fetch(`${BASE_URL}/profession/match`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text, answers }),
+    body: JSON.stringify({ sessionId, answers }),
   });
   const data = await handleResponse(res);
-  return data.profession;
+  return data.recommendation;
 };
