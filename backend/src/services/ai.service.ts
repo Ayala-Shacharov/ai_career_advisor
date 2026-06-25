@@ -88,20 +88,26 @@ export class AIService {
     temperature: number,
   ): Promise<string> {
     const ai = new GoogleGenAI({ apiKey: getApiKey() });
+    const contents = `System:\n${systemPrompt}\n\nUser:\n${userText}`;
 
-    const response = await ai.models.generateContent({
-      model: MODEL,
-      contents: `System:\n${systemPrompt}\n\nUser:\n${userText}`,
-      config: { temperature },
-    });
+    const tryModel = async (model: string): Promise<string> => {
+      const response = await ai.models.generateContent({ model, contents, config: { temperature } });
+      const content = response.text;
+      if (typeof content !== 'string' || content.length === 0) throw new Error('Invalid AI response.');
+      return content;
+    };
 
-    const content = response.text;
-    if (typeof content !== 'string' || content.length === 0) {
-      throw new Error('Invalid AI response.');
+    const isRetryable = (e: unknown) => e instanceof Error && (e.message.includes('503') || e.message.includes('429'));
+
+    try {
+      return await tryModel(MODEL);
+    } catch (e) {
+      if (!isRetryable(e)) throw e;
+      return await tryModel('gemini-2.5-flash');
     }
 
-    return content;
   }
+
 
   async generateQuestions(text: string): Promise<GenerateQuestionsResponse> {
     try {

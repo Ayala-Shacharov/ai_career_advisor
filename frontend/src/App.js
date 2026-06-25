@@ -90,6 +90,7 @@ function App() {
             total={questions.length}
             onAnswer={handleAnswer}
             loading={loading}
+            loadingResult={step === "loading"}
             error={error}
           />
         )}

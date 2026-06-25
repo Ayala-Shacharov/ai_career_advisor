@@ -108,6 +108,52 @@ body {
   padding: 24px;
 }
 
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .app-header {
+    padding: 18px 20px;
+    font-size: 0.95rem;
+  }
+
+  .card {
+    padding: 32px 20px 28px;
+    border-radius: 18px;
+  }
+
+  .input-card-title {
+    font-size: 1.4rem;
+  }
+
+  .question-text {
+    font-size: 1.1rem;
+  }
+
+  .result-card {
+    padding: 40px 20px 36px;
+  }
+
+  .result-title {
+    font-size: 1.8rem;
+  }
+
+  .result-icon {
+    font-size: 4rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+    padding: 12px 14px;
+  }
+
+  .btn-submit {
+    font-size: 0.95rem;
+  }
+
+  .orb1, .orb2, .orb3 {
+    display: none;
+  }
+}
+
 /* ── Card ── */
 .card {
   position: relative;
@@ -142,26 +188,14 @@ body {
   pointer-events: none;
 }
 
-.card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius);
-  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.04) 50%, transparent 60%);
-  background-size: 200% 100%;
-  animation: shimmer 3.5s ease-in-out infinite;
-  pointer-events: none;
-}
+
 
 @keyframes border-spin {
   0%   { background-position: 0% 50%; }
   100% { background-position: 300% 50%; }
 }
 
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
+
 
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(40px) scale(0.96); }
@@ -444,4 +478,17 @@ body {
   color: #c4b5fd;
   box-shadow: 0 0 24px rgba(124, 58, 237, 0.3);
   transform: translateY(-3px) scale(1.04);
+}
+
+/* ── Wave SVG loader ── */
+.wave-svg {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 22px;
+  animation: wave-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes wave-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
 }
