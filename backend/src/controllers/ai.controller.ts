@@ -19,12 +19,9 @@ export const generateQuestions = async (
   req: Request<{}, {}, GenerateQuestionsRequest>,
   res: Response,
 ): Promise<Response> => {
-  console.log('generateQuestions request body:', req.body);
-
   const { text } = req.body;
 
   if (!isValidText(text)) {
-    console.log('generateQuestions validation failed; text is missing or empty.');
     return res.status(400).json({ message: 'Text is required.' });
   }
 
@@ -41,7 +38,6 @@ export const generateQuestions = async (
     sessions.push({ sessionId, freeText: text, qa, recommendation: null });
     await writeDb(sessions);
 
-    console.log('generateQuestions success response:', { sessionId, qa });
     return res.status(200).json({ sessionId, qa });
   } catch (error) {
     console.error('generateQuestions controller error:', error);
@@ -53,17 +49,13 @@ export const matchProfession = async (
   req: Request<{}, {}, GetRecommendationRequest>,
   res: Response,
 ): Promise<Response> => {
-  console.log('matchProfession request body:', req.body);
-
   const { sessionId, answers } = req.body;
 
   if (!isValidText(sessionId)) {
-    console.log('matchProfession validation failed; sessionId is missing.');
     return res.status(400).json({ message: 'sessionId is required.' });
   }
 
   if (!isValidAnswers(answers)) {
-    console.log('matchProfession validation failed; answers must contain exactly 4 valid items.');
     return res.status(400).json({ message: 'Exactly 4 answers are required.' });
   }
 
@@ -72,17 +64,15 @@ export const matchProfession = async (
     const session = findSession(sessions, sessionId);
 
     if (!session) {
-      console.log('matchProfession session not found:', sessionId);
       return res.status(404).json({ message: 'Session not found.' });
     }
 
     const result = await aiService.matchProfession(session.freeText, session.qa, answers);
 
-    session.recommendation = result.profession;
+    session.recommendation = result.professions;
     await writeDb(sessions);
 
-    console.log('matchProfession success response:', result);
-    return res.status(200).json({ recommendation: result.profession });
+    return res.status(200).json({ recommendation: result.professions });
   } catch (error) {
     console.error('matchProfession controller error:', error);
     return res.status(500).json({ message: 'Unable to match profession.' });

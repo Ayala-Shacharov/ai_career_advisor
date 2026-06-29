@@ -21,8 +21,14 @@ export interface ProfessionMatchRequest {
   answers: AnswerItem[];
 }
 
+export interface ProfessionRecommendation {
+  title: string;
+  reason: string;
+  matchPercent: number;
+}
+
 export interface ProfessionMatchResponse {
-  profession: string;
+  professions: ProfessionRecommendation[];
 }
 
 export interface QAItem {
@@ -34,7 +40,7 @@ export interface SessionRecord {
   sessionId: string;
   freeText: string;
   qa: QAItem[];
-  recommendation: string | null;
+  recommendation: ProfessionRecommendation[] | null;
 }
 
 export interface GetRecommendationRequest {

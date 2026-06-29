@@ -65,17 +65,35 @@ const validateQuestions = (payload: unknown): GenerateQuestionsResponse => {
   return { questions };
 };
 
-const validateProfession = (payload: unknown): ProfessionMatchResponse => {
+const validateProfessions = (payload: unknown): ProfessionMatchResponse => {
   if (
     !payload ||
     typeof payload !== 'object' ||
-    !('profession' in payload) ||
-    typeof payload.profession !== 'string'
+    !('professions' in payload) ||
+    !Array.isArray(payload.professions) ||
+    payload.professions.length !== 3
   ) {
-    throw new Error('Invalid profession payload.');
+    throw new Error('Invalid professions payload.');
   }
 
-  return { profession: payload.profession };
+  const professions = payload.professions.map((item) => {
+    if (
+      !item ||
+      typeof item !== 'object' ||
+      typeof (item as any).title !== 'string' ||
+      typeof (item as any).reason !== 'string' ||
+      typeof (item as any).matchPercent !== 'number'
+    ) {
+      throw new Error('Invalid profession structure.');
+    }
+    return {
+      title: (item as any).title,
+      reason: (item as any).reason,
+      matchPercent: (item as any).matchPercent,
+    };
+  });
+
+  return { professions };
 };
 
 const getErrorMessage = (error: unknown): string =>
@@ -105,9 +123,7 @@ export class AIService {
       if (!isRetryable(e)) throw e;
       return await tryModel('gemini-2.5-flash');
     }
-
   }
-
 
   async generateQuestions(text: string): Promise<GenerateQuestionsResponse> {
     try {
@@ -127,7 +143,7 @@ export class AIService {
     try {
       const payload = JSON.stringify({ text, qa, answers }, null, 2);
       const content = await this.callModel(buildProfessionPrompt(), payload, 0.3);
-      return validateProfession(parseJsonObject(content));
+      return validateProfessions(parseJsonObject(content));
     } catch (error) {
       console.error('matchProfession error:', error);
       throw new Error(`Failed to match profession: ${getErrorMessage(error)}`);
