@@ -13,6 +13,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isFollowUp, setIsFollowUp] = useState(false);
 
   const handleTextSubmit = async (text) => {
     setLoading(true);
@@ -21,6 +22,7 @@ function App() {
       const { sessionId: sid, questions: qs } = await fetchQuestions(text);
       setSessionId(sid);
       setQuestions(qs);
+      setAnswers([]);
       setStep("questions");
     } catch (e) {
       setError(e.message);
@@ -32,25 +34,33 @@ function App() {
   const handleAnswer = async (answer) => {
     const newAnswers = [...answers, answer];
 
-  if (newAnswers.length === questions.length) {
-    setStep("loading");
-    setError(null);
-    try {
-      const recommendation = await fetchRecommendation(sessionId, newAnswers);
+    if (newAnswers.length === questions.length) {
+      setStep("loading");
+      setError(null);
+      try {
+        const data = await fetchRecommendation(sessionId, newAnswers);
+
+        if (data.needsMoreInfo) {
+          setQuestions(data.qa);
+          setAnswers([]);
+          setStep("questions");
+          setIsFollowUp(true);
+        } else {
+          setAnswers(newAnswers);
+          setResult(data.recommendation);
+          setStep("result");
+        }
+      } catch (e) {
+        setAnswers(newAnswers.slice(0, -1));
+        setError(e.message);
+        setStep("questions");
+      } finally {
+        setLoading(false);
+      }
+    } else {
       setAnswers(newAnswers);
-      setResult(recommendation);
-      setStep("result");
-    } catch (e) {
-      setAnswers(newAnswers.slice(0, -1));
-      setError(e.message);
-      setStep("questions");
-    } finally {
-      setLoading(false);
     }
-  } else {
-    setAnswers(newAnswers);
-  }
-};
+  };
 
   const handleRestart = () => {
     setStep("input");
@@ -59,6 +69,7 @@ function App() {
     setAnswers([]);
     setResult(null);
     setError(null);
+    setIsFollowUp(false);
   };
 
   const current = answers.length;
@@ -92,6 +103,7 @@ function App() {
             loading={loading}
             loadingResult={step === "loading"}
             error={error}
+            isFollowUp={isFollowUp}
           />
         )}
         {step === "result" && (

@@ -17,6 +17,10 @@ export const writeDb = async (sessions: SessionRecord[]): Promise<void> => {
   await writeFile(DB_PATH, JSON.stringify(sessions, null, 2), 'utf-8');
 };
 
+export const clearDb = async (): Promise<void> => {
+  await writeFile(DB_PATH, '[]', 'utf-8');
+};
+
 export const findSession = (
   sessions: SessionRecord[],
   sessionId: string,
