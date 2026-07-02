@@ -34,6 +34,11 @@ export interface ProfessionMatchResponse {
 export interface QAItem {
   question: string;
   options: [string, string, string, string];
+  answer?: string;
+}
+
+export interface SufficiencyCheckResponse {
+  sufficient: boolean;
 }
 
 export interface SessionRecord {
@@ -41,9 +46,19 @@ export interface SessionRecord {
   freeText: string;
   qa: QAItem[];
   recommendation: ProfessionRecommendation[] | null;
+  extraRounds: number;
 }
 
 export interface GetRecommendationRequest {
   sessionId: string;
   answers: string[];
+}
+
+export interface SessionRecord {
+  sessionId: string;
+  freeText: string;
+  qa: QAItem[];
+  recommendation: ProfessionRecommendation[] | null;
+  extraRounds: number;
+  createdAt: number;
 }

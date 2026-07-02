@@ -17,24 +17,31 @@ const WaveSVG = () => (
   </svg>
 );
 
-const QuestionCard = ({ question, index, total, onAnswer, loading, loadingResult, error }) => (
+const QuestionCard = ({ question, index, total, onAnswer, loading, loadingResult, error, isFollowUp }) => (
   <div className="card">
     {loadingResult ? (
-      <WaveSVG />
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "100px 48px" }}>
+        <WaveSVG />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
+          <span className="spinner" style={{ width: "32px", height: "32px" }} />
+          <span className="step-label">מנתח תשובות...</span>
+        </div>
+        <WaveSVG />
+      </div>
     ) : (
       <>
+        {isFollowUp && (
+          <p className="step-label" style={{ marginBottom: "8px", color: "#06b6d4" }}>
+            שאלות נוספות לצורך חידוד
+          </p>
+        )}
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${((index + 1) / total) * 100}%` }} />
         </div>
         <span className="step-label">שאלה {index + 1} מתוך {total}</span>
       </>
     )}
-    {loadingResult ? (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", padding: "24px 0" }}>
-        <span className="spinner" style={{ width: "32px", height: "32px" }} />
-        <span className="step-label">מנתח תשובות...</span>
-      </div>
-    ) : (
+    {!loadingResult && (
       <>
         <p className="question-text">{question.question}</p>
         <div className="options-group">

@@ -1,6 +1,6 @@
 const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
-const OVERLOAD_MSG = "המערכת עמוסה כרגע, נסי שוב בעוד כמה שניות. אם הבעיה נמשכת, אנא פנה/י לתמיכה.";
+const OVERLOAD_MSG = "המערכת עמוסה כרגע, נסה/י שוב בעוד כמה שניות. אם הבעיה נמשכת, אנא פנה/י לתמיכה.";
 
 const handleResponse = async (res) => {
   if (!res.ok) {
@@ -8,7 +8,7 @@ const handleResponse = async (res) => {
     const msg = (data?.message || "").toLowerCase();
     if (msg.includes("unable") || msg.includes("unavailable") || res.status === 503)
       throw new Error(OVERLOAD_MSG);
-    throw new Error("אירעה שגיאה, נסי שוב");
+    throw new Error("אירעה שגיאה, נסה/י שוב");
   }
   return res.json();
 };
@@ -30,5 +30,6 @@ export const fetchRecommendation = async (sessionId, answers) => {
     body: JSON.stringify({ sessionId, answers }),
   });
   const data = await handleResponse(res);
-  return data.recommendation;
+  // Returns { needsMoreInfo, qa } or { needsMoreInfo: false, recommendation }
+  return data;
 };
