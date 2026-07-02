@@ -17,9 +17,15 @@ export const writeDb = async (sessions: SessionRecord[]): Promise<void> => {
   await writeFile(DB_PATH, JSON.stringify(sessions, null, 2), 'utf-8');
 };
 
-export const clearDb = async (): Promise<void> => {
-  await writeFile(DB_PATH, '[]', 'utf-8');
+const TTL_MS = 2 * 60 * 60 * 1000; // 2 שעות
+
+export const cleanOldSessions = async (): Promise<void> => {
+  const sessions = await readDb();
+  const now = Date.now();
+  const fresh = sessions.filter((s) => now - s.createdAt < TTL_MS);
+  await writeDb(fresh);
 };
+
 
 export const findSession = (
   sessions: SessionRecord[],

@@ -53,3 +53,12 @@ export interface GetRecommendationRequest {
   sessionId: string;
   answers: string[];
 }
+
+export interface SessionRecord {
+  sessionId: string;
+  freeText: string;
+  qa: QAItem[];
+  recommendation: ProfessionRecommendation[] | null;
+  extraRounds: number;
+  createdAt: number;
+}

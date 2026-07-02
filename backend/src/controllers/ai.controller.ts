@@ -39,7 +39,7 @@ export const generateQuestions = async (
     }));
 
     const sessions = await readDb();
-    sessions.push({ sessionId, freeText: text, qa, recommendation: null, extraRounds: 0 });
+    sessions.push({ sessionId, freeText: text, qa, recommendation: null, extraRounds: 0, createdAt: Date.now() });
     await writeDb(sessions);
 
     return res.status(200).json({ sessionId, qa });
