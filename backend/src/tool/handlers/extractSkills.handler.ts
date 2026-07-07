@@ -75,8 +75,11 @@ export const extractSkillsHandler = async (sessionId: string): Promise<SkillsOut
     const callGemini = async (): Promise<string> => {
         const ai = new GoogleGenAI({ apiKey });
         const contents = [
-            { role: 'user', parts: [{ text: `${buildSkillsPrompt()}\n\n${userPayload}` }] }
+            { role: 'user', parts: [{ text: buildSkillsPrompt() }] },  // system
+            { role: 'model', parts: [{ text: 'מובן, אנא שלח את הנתונים.' }] },
+            { role: 'user', parts: [{ text: userPayload }] },           // data בנפרד
         ];
+
         const response = await ai.models.generateContent({ model: MODEL, contents, config: { temperature: 0.2 } });
         if (typeof response.text !== 'string' || response.text.length === 0) throw new Error('Empty response');
         return response.text;
