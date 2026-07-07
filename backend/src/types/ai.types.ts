@@ -41,12 +41,9 @@ export interface SufficiencyCheckResponse {
   sufficient: boolean;
 }
 
-export interface SessionRecord {
-  sessionId: string;
-  freeText: string;
-  qa: QAItem[];
-  recommendation: ProfessionRecommendation[] | null;
-  extraRounds: number;
+export interface SkillItem {
+  name: string;
+  score: number;
 }
 
 export interface GetRecommendationRequest {
@@ -61,4 +58,6 @@ export interface SessionRecord {
   recommendation: ProfessionRecommendation[] | null;
   extraRounds: number;
   createdAt: number;
+  skills?: SkillItem[];
+  skillsSummary?: string;
 }
