@@ -157,3 +157,4 @@ build/
 
 # Optional cache junk
 *.tsbuildinfo
+backend/db.json
