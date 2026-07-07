@@ -6,6 +6,8 @@ import type {
   QAItem,
 } from '../types/ai.types.js';
 import { readDb, writeDb, findSession } from '../db/db.service.js';
+import { invokeTool } from '../tool/tool-registry.js';
+import type { SkillsOutput } from '../tool/tool-registry.js';
 
 const aiService = new AIService();
 
@@ -71,7 +73,6 @@ export const matchProfession = async (
       return res.status(404).json({ message: 'Session not found.' });
     }
 
-    // Append answers to qa in session
     answers.forEach((answer, i) => {
       const qaItem = session.qa[session.qa.length - answers.length + i];
       if (qaItem) {
@@ -81,7 +82,6 @@ export const matchProfession = async (
 
     const allAnswers = session.qa.filter((q) => q.answer).map((q) => q.answer as string);
 
-    // Sufficiency check — only if under the hard limit
     if (session.extraRounds < MAX_EXTRA_ROUNDS) {
       const { sufficient } = await aiService.checkSufficiency(session.freeText, session.qa, allAnswers);
 
@@ -96,7 +96,7 @@ export const matchProfession = async (
         session.qa.push(...newQA);
         session.extraRounds += 1;
         await writeDb(sessions);
-        console.log(`[Session ${sessionId}] Insufficient info — sending extra round ${session.extraRounds}/${MAX_EXTRA_ROUNDS}`);
+        console.error(`[Session ${sessionId}] Insufficient info — sending extra round ${session.extraRounds}/${MAX_EXTRA_ROUNDS}`);
 
         return res.status(200).json({
           needsMoreInfo: true,
@@ -106,13 +106,20 @@ export const matchProfession = async (
       }
     }
 
-    // Proceed with recommendation
-    console.log(`[Session ${sessionId}] Generating recommendation after ${session.extraRounds} extra round(s)${session.extraRounds === 0 ? ' — no extra rounds needed' : ''}`);
+    console.error(`[Session ${sessionId}] Generating recommendation after ${session.extraRounds} extra round(s)${session.extraRounds === 0 ? ' — no extra rounds needed' : ''}`);
     const result = await aiService.matchProfession(session.freeText, session.qa, allAnswers);
     session.recommendation = result.professions;
+
+    // Extract skills via tool registry — non-blocking, fallback on error
+    const skills = await invokeTool('extract_skills', { sessionId }).catch(
+      (): SkillsOutput => ({ skills: [], summary: '' })
+    ) as SkillsOutput;
+    session.skills = skills.skills;
+    session.skillsSummary = skills.summary;
+
     await writeDb(sessions);
 
-    return res.status(200).json({ needsMoreInfo: false, recommendation: result.professions });
+    return res.status(200).json({ needsMoreInfo: false, recommendation: result.professions, skills });
   } catch (error) {
     console.error('matchProfession controller error:', error);
     return res.status(500).json({ message: 'Unable to match profession.' });

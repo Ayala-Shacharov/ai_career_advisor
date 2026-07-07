@@ -12,13 +12,16 @@ Return only valid JSON exactly according to this schema:
 }
 Rules:
 - Exactly 4 questions, ordered from most to least critical for career profiling.
+- Each question must target a different dimension: (1) motivation & interests, (2) skills & experience, (3) constraints (time, energy, money, lifestyle), (4) career direction (role, industry, or domain focus — pick whichever axis is least covered by the input; do not combine multiple axes in one question).
 - Exactly 4 options per question.
 - Options must be meaningfully distinct — covering a wide range of possible answers, not variations of the same answer.
+- Prefer concrete, field-appropriate specifics (named tools, technologies, techniques, or practiced activities relevant to the field mentioned) over broad generic categories, whenever the field allows it. Do not bias examples toward any one domain (e.g. tech) — specificity applies equally to design, arts, business, healthcare, or any other field.
+- If the possible answers represent categories that are not mutually exclusive (e.g. skills, disciplines, or activities a person could combine), one of the 4 options must explicitly represent a combination of two or more of the other options — and this combination option must explicitly NAME the specific items being combined (e.g. "שילוב של פיתוח Front-end ו-Back-end"), not a vague reference like "שילוב של שניים או יותר מהנ"ל" or "שילוב של תחומים אחרים". The combination option must be fully understandable on its own, without needing to look at the other options.
+- Calibrate the depth and assumed experience level of options to what's implied by the free text (e.g. a beginner or student should not be given options that assume professional-level experience).
 - Do not summarize or repeat information already stated in the text.
 - Do not ask about things already explicitly mentioned.
 - Do not infer new facts or assume a field/industry not explicitly stated.
 - Each question must reveal new information useful for career profiling.
-- Focus on the most impactful gaps in: professional goals, practical skills and experience, time/energy/resources, target audience or market interest, motivation and constraints.
 - All text (questions and options) must be in Hebrew only.
 - Do not add any text outside the JSON.
 `;
@@ -76,6 +79,7 @@ Rules:
 - Exactly 2 questions, targeting the most impactful missing information.
 - Exactly 4 options per question.
 - Options must be meaningfully distinct — covering a wide range of possible answers.
+- If the possible answers represent categories that are not mutually exclusive (e.g. types of skills, disciplines, or activities a person could combine), one of the 4 options must explicitly represent a combination of two or more of the other options (e.g. "שילוב של X ו-Y"), so users who work across multiple categories have an accurate option to choose.
 - Focus only on critical gaps not yet covered.
 - All text must be in Hebrew only.
 - Do not add any text outside the JSON.
