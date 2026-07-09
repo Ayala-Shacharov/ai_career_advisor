@@ -1,4 +1,4 @@
-import { GoogleGenAI, type Content } from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
 import {
   buildQuestionPrompt,
   buildProfessionPrompt,
@@ -11,9 +11,6 @@ import type {
   SufficiencyCheckResponse,
   QAItem,
 } from '../types/ai.types.js';
-import { extractSkillsDefinition } from '../tool/definitions/extractSkills.definition.js';
-import { invokeTool } from '../tool/tool-registry.js';
-import type { SkillsOutput } from '../tool/tool-registry.js';
 
 const PRIMARY_MODEL = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash-lite';
 const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL ?? 'gemini-2.5-flash';
@@ -111,11 +108,6 @@ const validateSufficiency = (payload: unknown): SufficiencyCheckResponse => {
 const getErrorMessage = (e: unknown): string =>
   e instanceof Error ? e.message : 'Unknown error';
 
-export interface ProfessionWithSkillsResponse {
-  professions: ProfessionMatchResponse['professions'];
-  skills: SkillsOutput;
-}
-
 export class AIService {
   private async callModel(systemPrompt: string, userText: string, temperature: number): Promise<string> {
     const ai = new GoogleGenAI({ apiKey: getApiKey() });
@@ -198,65 +190,5 @@ export class AIService {
       console.error('generateFollowUpQuestions error:', error);
       throw new Error(`Failed to generate follow-up questions: ${getErrorMessage(error)}`);
     }
-  }
-
-  async matchProfessionWithTools(
-    sessionId: string,
-    text: string,
-    qa: QAItem[],
-    answers: string[],
-  ): Promise<ProfessionWithSkillsResponse> {
-    const MAX_TOOL_ROUNDS = 3;
-    const ai = new GoogleGenAI({ apiKey: getApiKey() });
-
-    const userPayload = [
-      `[תיאור חופשי של המשתמש]: ${text}`,
-      `[שאלות ותשובות]:`,
-      ...qa.map((item, i) => `  שאלה ${i + 1}: ${item.question}\n  תשובה: ${item.answer ?? answers[i] ?? ''}`),
-      `[sessionId]: ${sessionId}`,
-    ].join('\n');
-
-    const contents: Content[] = [
-      { role: 'user', parts: [{ text: `System:\n${buildProfessionPrompt()}\n\nUser:\n${userPayload}` }] },
-    ];
-
-    const tools = [{ functionDeclarations: [extractSkillsDefinition] }];
-    let skills: SkillsOutput = { skills: [], summary: '' };
-
-    for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-      console.log(`[AI:tools] Round ${round + 1}`);
-      const response = await ai.models.generateContent({
-        model: MODEL,
-        contents,
-        config: { temperature: 0.3, tools } as any,
-      });
-
-      const parts = response.candidates?.[0]?.content?.parts ?? [];
-      const fnCallPart = parts.find((p: any) => p.functionCall);
-
-      if (!fnCallPart) {
-        const finalText = response.text;
-        if (typeof finalText !== 'string' || finalText.length === 0)
-          throw new Error('Empty final response from Gemini.');
-        return { professions: validateProfessions(parseJsonObject(finalText)).professions, skills };
-      }
-
-      const { name, args } = (fnCallPart as any).functionCall;
-      console.log(`[AI:tools] Gemini called: ${name}`, args);
-
-      const toolResult = await invokeTool(name, args as Record<string, string>).catch(
-        (): SkillsOutput => ({ skills: [], summary: '' }),
-      ) as SkillsOutput;
-
-      if (name === 'extract_skills') skills = toolResult;
-
-      contents.push({ role: 'model', parts: [fnCallPart as any] });
-      contents.push({
-        role: 'user',
-        parts: [{ functionResponse: { name, response: { output: toolResult } } } as any],
-      });
-    }
-
-    throw new Error('Tool call loop exceeded maximum rounds.');
   }
 }
