@@ -39,6 +39,9 @@ const parseSkillsOutput = (raw: string): SkillsOutput => {
     const first = normalized.indexOf('{');
     const last = normalized.lastIndexOf('}');
     const candidate = first !== -1 && last > first ? normalized.slice(first, last + 1) : normalized;
+    console.log("=== GEMINI RAW RESPONSE ===");
+    console.log(candidate);
+    console.log("===========================");
     const parsed = JSON.parse(candidate);
 
     if (!parsed || !Array.isArray(parsed.skills) || typeof parsed.summary !== 'string') {

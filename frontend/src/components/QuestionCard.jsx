@@ -18,13 +18,18 @@ const WaveSVG = () => (
 );
 
 const QuestionCard = ({ question, index, total, onAnswer, loading, loadingResult, error, isFollowUp }) => (
-  <div className="card">
+  <div className="card" style={{ minHeight: "480px" }}>
     {loadingResult ? (
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "100px 48px" }}>
+      <div style={{
+        position: "absolute", inset: 0,
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "space-between",
+        padding: "clamp(24px, 6vh, 60px) 48px",
+      }}>
         <WaveSVG />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
-          <span className="spinner" style={{ width: "32px", height: "32px" }} />
-          <span className="step-label">מנתח תשובות...</span>
+          <span className="spinner" style={{ width: "36px", height: "36px", borderWidth: "3px" }} />
+          <span className="step-label" style={{ color: "#c4b5fd" }}>מנתח תשובות...</span>
         </div>
         <WaveSVG />
       </div>
@@ -39,26 +44,17 @@ const QuestionCard = ({ question, index, total, onAnswer, loading, loadingResult
           <div className="progress-fill" style={{ width: `${((index + 1) / total) * 100}%` }} />
         </div>
         <span className="step-label">שאלה {index + 1} מתוך {total}</span>
-      </>
-    )}
-    {!loadingResult && (
-      <>
-        <p className="question-text">{question.question}</p>
+        <p className="question-text">{question?.question}</p>
         <div className="options-group">
-          {question.options.map((option, i) => (
-            <button
-              key={i}
-              className="btn btn-option"
-              onClick={() => onAnswer(option)}
-              disabled={loading}
-            >
+          {question?.options?.map((option, i) => (
+            <button key={i} className="btn btn-option" onClick={() => onAnswer(option)} disabled={loading}>
               {option}
             </button>
           ))}
         </div>
+        {error && <p className="inline-error">{error}</p>}
       </>
     )}
-    {error && <p className="inline-error">{error}</p>}
   </div>
 );
 

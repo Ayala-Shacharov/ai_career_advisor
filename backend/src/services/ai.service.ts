@@ -15,7 +15,8 @@ import { extractSkillsDefinition } from '../tool/definitions/extractSkills.defin
 import { invokeTool } from '../tool/tool-registry.js';
 import type { SkillsOutput } from '../tool/tool-registry.js';
 
-const MODEL = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
+const PRIMARY_MODEL = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash-lite';
+const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL ?? 'gemini-2.5-flash';
 
 const getApiKey = (): string => {
   const key = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_API_KEY;
@@ -130,15 +131,17 @@ export class AIService {
     };
 
     const isRetryable = (e: unknown) =>
-      e instanceof Error && (e.message.includes('503') || e.message.includes('429'));
+      e instanceof Error && e.message.includes('503');
 
     try {
-      return await tryModel(MODEL);
+      return await tryModel(PRIMARY_MODEL);
     } catch (e) {
       if (!isRetryable(e)) throw e;
-      console.warn(`[AI] Primary model failed: ${MODEL}`);
-      console.warn(`[AI] Switching to fallback: gemini-2.5-flash`);
-      return await tryModel('gemini-2.5-flash');
+
+      console.warn(`[AI] Primary model failed: ${PRIMARY_MODEL}`, e);
+      console.warn(`[AI] Switching to fallback: ${FALLBACK_MODEL}`);
+
+      return await tryModel(FALLBACK_MODEL);
     }
   }
 
