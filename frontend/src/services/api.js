@@ -24,12 +24,24 @@ export const fetchQuestions = async (text) => {
 };
 
 export const fetchRecommendation = async (sessionId, answers) => {
-  const res = await fetch(`${BASE_URL}/profession/match`, {
+  // First submit answers to the existing match endpoint to save them to the session
+  const matchRes = await fetch(`${BASE_URL}/profession/match`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ sessionId, answers }),
   });
-  const data = await handleResponse(res);
-  // Returns { needsMoreInfo, qa } or { needsMoreInfo: false, recommendation }
-  return data;
+  const matchData = await handleResponse(matchRes);
+
+  // If more info is needed, return that directly (no agent call yet)
+  if (matchData.needsMoreInfo) return matchData;
+
+  // Otherwise call the agent for the final recommendation
+  const agentRes = await fetch(`${BASE_URL}/agent/recommend`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sessionId }),
+  });
+  const agentData = await handleResponse(agentRes);
+  return { needsMoreInfo: false, ...agentData };
 };
+
