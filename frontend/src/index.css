@@ -366,19 +366,6 @@ body {
   transform: translateY(-3px) scale(1.04);
 }
 
-.btn-preview {
-  margin-right: auto;
-  font-size: 0.8rem;
-  padding: 6px 14px;
-  opacity: 0.75;
-  position: relative;
-  z-index: 20;
-}
-
-.btn-preview:hover {
-  opacity: 1;
-}
-
 /* ── Spinner ── */
 .spinner {
   width: 20px;
