@@ -35,7 +35,7 @@ The session contains:
 - skillsSummary: a summary of the extracted skills from the previous step
 
 Use the extracted skills and skillsSummary as analyzed evidence — do not ignore them and do not invent new skills.
-Base the matchPercentage on the skill confidence scores and how well each profession aligns with them.
+Use the skill confidence scores internally to calculate matchPercentage and to judge how well each profession aligns with the user's skills. These raw scores are for your calculation only — never quote them verbatim in the "reason" text.
 Each reason must reference the user's actual answers or extracted skills — not generic profession descriptions.
 
 After the tool call completes, produce ONLY the following strict JSON (no markdown, no extra text):
@@ -54,6 +54,7 @@ Rules:
 - Do not invent skills or personal information beyond what is in the session.
 - All user-facing text must be in Hebrew.
 - matchPercentage values must each differ by at least 3 points.
+- Never mention numeric confidence scores (e.g. "0.85") in the "reason" text — describe the strength of the match qualitatively in words (e.g. "התאמה חזקה", "קשר ברור לתחום"), not with numbers copied from the skills data.
 `.trim();
 
 const handleToolCall = async (name: string, args: Record<string, string>): Promise<string> => {
